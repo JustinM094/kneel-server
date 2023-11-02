@@ -5,6 +5,7 @@ from nss_handler import HandleRequests, status
 from views import list_metals, retrieve_metal, create_metal, update_metal, delete_metal
 from views import list_sizes, retrieve_size, create_size, update_size, delete_size
 from views import list_styles, retrieve_styles, create_styles, update_styles, delete_styles
+from views import list_orders, retrieve_order, create_order, update_order, delete_order
 
 
 class JSONServer(HandleRequests):
@@ -38,6 +39,14 @@ class JSONServer(HandleRequests):
             response_body = list_styles(url)
             return self.response(response_body, status.HTTP_200_SUCCESS.value)
 
+        elif url["requested_resource"] == "orders":
+            if url["pk"] != 0:
+                response_body = retrieve_order(url)
+                return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
+            response_body = list_orders(url)
+            return self.response(response_body, status.HTTP_200_SUCCESS.value)
+
         else:
             return self.response("", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
 
@@ -59,6 +68,11 @@ class JSONServer(HandleRequests):
 
         elif url["requested_resource"] == "styles":
             successfully_created = create_styles(request_body)
+            if successfully_created:
+                return self.response("", status.HTTP_201_SUCCESS_CREATED.value)
+
+        elif url["requested_resource"] == "orders":
+            successfully_created = create_order(request_body)
             if successfully_created:
                 return self.response("", status.HTTP_201_SUCCESS_CREATED.value)
 
@@ -90,6 +104,12 @@ class JSONServer(HandleRequests):
                 if successfully_updated:
                     return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
 
+        elif url["requested_resource"] == "orders":
+            if pk != 0:
+                successfully_updated = update_order(pk, request_body)
+                if successfully_updated:
+                    return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
+
         else:
             return self.response("Requested resource not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND)
 
@@ -118,6 +138,14 @@ class JSONServer(HandleRequests):
         elif url["requested_resource"] == "styles":
             if pk != 0:
                 successfully_deleted = delete_styles(pk)
+                if successfully_deleted:
+                    return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
+
+                return self.response("Requested resource not found", status.HTTP_404_CLIENT_ERROR_RESOURCE_NOT_FOUND.value)
+
+        elif url["requested_resource"] == "orders":
+            if pk != 0:
+                successfully_deleted = delete_order(pk)
                 if successfully_deleted:
                     return self.response("", status.HTTP_204_SUCCESS_NO_RESPONSE_BODY.value)
 
