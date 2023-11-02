@@ -123,6 +123,198 @@ def retrieve_order(url):
             }
             serialized_order = json.dumps(order)
 
+        elif "query_params" in url and set(url["query_params"]["_expand"]) == set(['metal', 'size', 'style']):
+            db_cursor.execute("""
+                SELECT
+                    o.id,
+                    o.metal_id,
+                    o.size_id,
+                    o.style_id,
+                    m.id metalId,
+                    m.metal,
+                    m.price as metalPrice,
+                    s.id sizeId,
+                    s.carets,
+                    s.price as sizePrice,
+                    st.id styleId,
+                    st.style,
+                    st.price as stylePrice
+                FROM Orders o
+                JOIN Metals m
+                    ON m.id = o.metal_id
+                JOIN Sizes s
+                    ON s.id = o.size_id
+                JOIN Styles st
+                    ON st.id = o.style_id
+                WHERE o.id = ?
+                """, (url["pk"],))
+            query_results = db_cursor.fetchone()
+
+            metal = {
+                "id": query_results['metalId'],
+                "metal": query_results['metal'],
+                "price": query_results["metalPrice"]
+            }
+
+            size = {
+                "id": query_results['sizeId'],
+                "carets": query_results['carets'],
+                "price": query_results["sizePrice"]
+            }
+
+            style = {
+                "id": query_results['styleId'],
+                "style": query_results['style'],
+                "price": query_results["stylePrice"]
+            }
+
+            order = {
+                "id": query_results['id'],
+                "metal_id": query_results['metal_id'],
+                "size_id": query_results["size_id"],
+                "style_id": query_results["style_id"],
+                "metal": metal,
+                "size": size,
+                "style": style
+            }
+
+            serialized_order = json.dumps(order)
+
+        elif "query_params" in url and set(url["query_params"]["_expand"]) == set(['metal', 'size']):
+            db_cursor.execute("""
+                SELECT
+                    o.id,
+                    o.metal_id,
+                    o.size_id,
+                    o.style_id,
+                    m.id metalId,
+                    m.metal,
+                    m.price as metalPrice,
+                    s.id sizeId,
+                    s.carets,
+                    s.price as sizePrice
+                FROM Orders o
+                JOIN Metals m
+                    ON m.id = o.metal_id
+                JOIN Sizes s
+                    ON s.id = o.size_id
+                WHERE o.id = ?
+                """, (url["pk"],))
+            query_results = db_cursor.fetchone()
+
+            metal = {
+                "id": query_results['metalId'],
+                "metal": query_results['metal'],
+                "price": query_results["metalPrice"]
+            }
+
+            size = {
+                "id": query_results['sizeId'],
+                "carets": query_results['carets'],
+                "price": query_results["sizePrice"]
+            }
+
+            order = {
+                "id": query_results['id'],
+                "metal_id": query_results['metal_id'],
+                "size_id": query_results["size_id"],
+                "style_id": query_results["style_id"],
+                "metal": metal,
+                "size": size
+            }
+
+            serialized_order = json.dumps(order)
+
+        elif "query_params" in url and set(url["query_params"]["_expand"]) == set(['metal', 'style']):
+            db_cursor.execute("""
+                SELECT
+                    o.id,
+                    o.metal_id,
+                    o.size_id,
+                    o.style_id,
+                    m.id metalId,
+                    m.metal,
+                    m.price as metalPrice,
+                    st.id styleId,
+                    st.style,
+                    st.price as stylePrice
+                FROM Orders o
+                JOIN Metals m
+                    ON m.id = o.metal_id
+                JOIN Styles st
+                    ON st.id = o.style_id
+                WHERE o.id = ?
+                """, (url["pk"],))
+            query_results = db_cursor.fetchone()
+
+            metal = {
+                "id": query_results['metalId'],
+                "metal": query_results['metal'],
+                "price": query_results["metalPrice"]
+            }
+
+            style = {
+                "id": query_results['styleId'],
+                "style": query_results['style'],
+                "price": query_results["stylePrice"]
+            }
+
+            order = {
+                "id": query_results['id'],
+                "metal_id": query_results['metal_id'],
+                "size_id": query_results["size_id"],
+                "style_id": query_results["style_id"],
+                "metal": metal,
+                "style": style
+            }
+
+            serialized_order = json.dumps(order)
+
+        elif "query_params" in url and set(url["query_params"]["_expand"]) == set(['size', 'style']):
+            db_cursor.execute("""
+                SELECT
+                    o.id,
+                    o.metal_id,
+                    o.size_id,
+                    o.style_id,
+                    s.id sizeId,
+                    s.carets,
+                    s.price as sizePrice,
+                    st.id styleId,
+                    st.style,
+                    st.price as stylePrice
+                FROM Orders o
+                JOIN Sizes s
+                    ON s.id = o.size_id
+                JOIN Styles st
+                    ON st.id = o.style_id
+                WHERE o.id = ?
+                """, (url["pk"],))
+            query_results = db_cursor.fetchone()
+
+            size = {
+                "id": query_results['sizeId'],
+                "carets": query_results['carets'],
+                "price": query_results["sizePrice"]
+            }
+
+            style = {
+                "id": query_results['styleId'],
+                "style": query_results['style'],
+                "price": query_results["stylePrice"]
+            }
+
+            order = {
+                "id": query_results['id'],
+                "metal_id": query_results['metal_id'],
+                "size_id": query_results["size_id"],
+                "style_id": query_results["style_id"],
+                "size": size,
+                "style": style
+            }
+
+            serialized_order = json.dumps(order)
+
         else:
             db_cursor.execute("""
             SELECT
